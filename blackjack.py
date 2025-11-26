@@ -35,87 +35,108 @@ def computer_draw_card():
 balance = 1000
 while balance > 0:
     start = input(f"Your balance is {balance}, Wanna play a round of blackjack? (yes/no)").lower()
-    bet = int(input('Whats your bet?'))
-    balance -= bet
     if start == 'no':
         break
+    elif start == 'yes':
+        while True:
+            try:
+                bet = int(input("What's your bet? "))
+            except ValueError:
+                print("Enter a number.")
+                continue
 
-    hand = []
-    computer_hand = []
-
-    draw_card()
-    draw_card()
-    computer_draw_card()
-    computer_draw_card()
-
-    your_total = calculate_total(hand)
-
-    print(f"you have {hand} and your total is {your_total}" )
-    print(f"computer has a {computer_hand[0]}")
-
-    if hand == [10, 'A']:
-        computer_total = calculate_total(computer_hand)
-        if computer_total <= 16:
-            print(f"computer has {computer_hand} and a total of {computer_total} ")
-            time.sleep(1.7)
-            computer_draw_card()
-            print(f"computer drew a {computer_hand[-1]}")
-        else:
-            print(f"computer has {computer_hand} and a total of {computer_total} ")
-            if computer_total > 21:
-                print("COMPUTER BUSTED")
-                balance += bet + 1.5 * bet
-            elif computer_total == 21:
-                print("That's unfortunate")
-                balance += bet
+            if bet <= 0:
+                print("Bet must be positive.")
+            elif bet > balance:
+                print("You can't bet more than your balance.")
             else:
-                print("BLACKJACK!")
-                balance += bet + 1.5 * bet
-
-    while your_total < 21:
-        hit = input("What do you want to do? ('H' for Hit/'S' for Stand/'D' for Double down/'B' for Balance)").lower()
-        if hit == 'b':
-            print(f'Your balance is {balance}')
-            continue
-
-        if hit == 'd':
-            balance -= bet
-            draw_card()
-            your_total = calculate_total(hand)
-            print(f"you have {hand} and your total is {your_total}")
-            hit = 'ds'
-
-
-        if hit == 'h':
-            draw_card()
-            your_total = calculate_total(hand)
-            print(f"you have {hand} and your total is {your_total}")
-            if your_total == 21:
-                print("BLACKJACK")
-            elif your_total > 21:
-                print("BUST! \nComputer won")
                 break
-        elif hit == 's' or 'ds':
-            while True:
-                computer_total = calculate_total(computer_hand)
-                if computer_total <= 16:
-                    print(f"computer has {computer_hand} and a total of {computer_total} ")
-                    time.sleep(1.7)
-                    computer_draw_card()
-                    print(f"computer drew a {computer_hand[-1]}")
-                else:
-                    break
-            print(f"computer has {computer_hand} and a total of {computer_total} ")
 
-            if computer_total > 21:
-                print("COMPUTER BUSTED")
-                if hit == "d":
-                    balance += bet*3
-                else:
-                    balance += bet*2
-
-            if your_total < computer_total <= 21 or your_total > 21:
-                print('computer won')
-            else:
-                print('you won')
+        balance -= bet
+        if start == 'no':
             break
+
+        hand = []
+        computer_hand = []
+
+        draw_card()
+        draw_card()
+        computer_draw_card()
+        computer_draw_card()
+
+        your_total = calculate_total(hand)
+
+        print(f"you have {hand} and your total is {your_total}" )
+        print(f"computer has a {computer_hand[0]}")
+
+        if len(hand) == 2 and calculate_total(hand) ==21:
+            computer_total = calculate_total(computer_hand)
+            if computer_total <= 16:
+                print(f"computer has {computer_hand} and a total of {computer_total} ")
+                time.sleep(1.7)
+                computer_draw_card()
+                print(f"computer drew a {computer_hand[-1]}")
+            else:
+                print(f"computer has {computer_hand} and a total of {computer_total} ")
+                if computer_total > 21:
+                    print("COMPUTER BUSTED")
+                    balance += bet + 1.5 * bet
+                elif computer_total == 21:
+                    print("That's unfortunate")
+                    balance += bet
+                else:
+                    print("BLACKJACK!")
+                    balance += bet + 1.5 * bet
+
+        while your_total < 21:
+            hit = input("What do you want to do? ('H' for Hit/'S' for Stand/'D' for Double down/'B' for Balance)").lower()
+            if hit == 'b':
+                print(f'Your balance is {balance}')
+                continue
+
+            if hit == 'd':
+                balance -= bet
+                draw_card()
+                your_total = calculate_total(hand)
+                print(f"you have {hand} and your total is {your_total}")
+                hit = 'ds'
+
+
+            if hit == 'h':
+                draw_card()
+                your_total = calculate_total(hand)
+                print(f"you have {hand} and your total is {your_total}")
+                if your_total == 21:
+                    print("BLACKJACK")
+                elif your_total > 21:
+                    print("BUST! \nComputer won")
+                    break
+            elif hit == ('s', 'ds'):
+                while True:
+                    computer_total = calculate_total(computer_hand)
+                    if computer_total <= 16:
+                        print(f"computer has {computer_hand} and a total of {computer_total} ")
+                        time.sleep(1.7)
+                        computer_draw_card()
+                        print(f"computer drew a {computer_hand[-1]}")
+                    else:
+                        break
+                print(f"computer has {computer_hand} and a total of {computer_total} ")
+
+                if computer_total > 21:
+                    print("COMPUTER BUSTED")
+                    if hit == "ds":
+                        balance += bet*4
+                    else:
+                        balance += bet*2
+
+                if your_total > 21:
+                    print("BUST! Computer won")
+                elif computer_total > 21:
+                    print("COMPUTER BUSTED, you win")
+                elif your_total > computer_total:
+                    print("you won")
+                elif your_total < computer_total:
+                    print("computer won")
+                else:
+                    print("push")
